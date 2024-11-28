@@ -191,7 +191,10 @@ class MiniWoBInstance(Thread):
         """
 
         if self.headless:
-            self.url = "file:///F:/Thesis/After%20ICSE/google-research-master/zero_shot_structured_reflection/" + self.url 
+            import os
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            self.url = f"file:///{dir_path}/../../" + self.url
+            # self.url = "file:///F:/Thesis/After%20ICSE/google-research-master/zero_shot_structured_reflection/" + self.url 
             print(self.url)
             self.driver.get(self.url)
         try:
