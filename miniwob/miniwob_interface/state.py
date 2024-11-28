@@ -154,6 +154,7 @@ class DOMElement(object):
         self._width = raw_dom["width"]
         self._height = raw_dom["height"]
         self._ref = raw_dom.get("ref")
+        self._placeholder = raw_dom.get('placeholder')
         if self.tag == "t":
             self._ref = None  # ignore refs for text, since they are unreliable
         if "text" in raw_dom:
@@ -258,6 +259,10 @@ class DOMElement(object):
         - Ref number restarts at the beginning of each episode
         """
         return self._ref
+
+    @property
+    def placeholder(self):
+        return self._placeholder
 
     @property
     def text(self):
