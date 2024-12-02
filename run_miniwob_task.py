@@ -19,7 +19,7 @@ import dataclasses
 from absl import logging
 from miniwob.miniwob_interface import miniwob_instance
 import prompt_util
-# from saxml.client.python import sax
+# from saxmll.saxml.client.python import sax
 from agent import Agent
 from selenium import webdriver
 from selenium.common import exceptions
@@ -168,8 +168,14 @@ class MiniWoBRunner:
     # options.SetExtraInput('temperature', temperature)
     # options.SetExtraInput('per_example_max_decode_steps', max_decode_steps)
     # sax_results = self.model.Generate(prompt, options)
-    results = Agent.ask(prompt, client="openai", temperature=temperature)
-    return [parse_response(response) for response, _ in results]
+    # return [parse_response(response) for response, _ in sax_results]
+    
+    # NEW ADDED: use openai API instead of saxml
+    prompt = [
+      {"role": "user", "content": prompt.strip()}
+    ]
+    results = Agent.ask(prompt, client="openai", temperature=temperature, max_tokens=max_decode_steps)
+    return [parse_response(results)]
 
   def begin_task(
       self,
@@ -327,8 +333,22 @@ class MiniWoBRunner:
           prompt = prompt_util.prompt_for_grounding(html, action)
           obj_ids = self.model_inf(prompt, self.llm_temp, self.llm_max_step)
           obj_ids = [util.parse_int(p) for p in obj_ids]
-          obj_idx = int(util.maj_vote_text(obj_ids))
-          action = f'click id={obj_idx}'
+          # NEW ADDED: handle error when obj_ids is N/A
+          try:
+            obj_idx = int(util.maj_vote_text(obj_ids))
+            action = f'click id={obj_idx}'
+          except ValueError:
+            print("Error here with obj_ids: ", obj_ids)
+            util.pause(self.instance, 1)
+            html, _, _ = util.flat_html(self.instance.get_state().dom_elements)
+            halt_status = STATUS.EXCEPTION
+            last_action_paraphrase = self.paraphrase_action(html, action)
+            prior_htmls.append(html)
+            prior_actions.append(last_action_paraphrase)
+            prior_exact_actions.append(action)
+            if debug_print:
+              LOGGING('exception detected %s', action)
+            break
       # Actual execution
       try:
         # NOTE, skip scroll action since doing it would change obj ids.

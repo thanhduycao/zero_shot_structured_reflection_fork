@@ -42,7 +42,7 @@ class APIUsageManager:
         cls.response_time = {}
 
 class Agent:
-  def ask(prompt, client= "anthropic", model=None, temperature = 0, module = "all", json_response=True):
+  def ask(prompt, client= "anthropic", model=None, temperature = 0, max_tokens = 2048, module = "all", json_response=False):
     model = model if model else GLOBAL_CONFIG['agent']['model']
     response = None
     if client == "openai":
@@ -53,6 +53,7 @@ class Agent:
             model= model,
             messages=prompt,
             temperature=temperature,
+            max_tokens=max_tokens,
             response_format={ 'type': 'json_object' },
             seed=0
           )
@@ -61,12 +62,13 @@ class Agent:
             model= model,
             messages=prompt,
             temperature=temperature,
-            seed=0
+            max_tokens=max_tokens,
           )
       except Exception as e:
         raise FailedOpenAIRequestError(e)
       
-      if (response.choices[0].finish_reason != "stop"):
+      print(response.choices[0].finish_reason)
+      if (response.choices[0].finish_reason != "stop" and response.choices[0].finish_reason != "length"):
         raise InvalidOpenAIFinishReasonError()
       
       APIUsageManager.record_usage(module, model, response.usage)
@@ -90,8 +92,7 @@ class Agent:
       except Exception as e:
         raise FailedOpenAIRequestError(e)
       print(response.content[0].text)
-      # if module == "agent":
-      #    return json.loads("{" + response.content[0].text)
+      
       if (json_response):
         return json.loads(response.content[0].text)
       else:
