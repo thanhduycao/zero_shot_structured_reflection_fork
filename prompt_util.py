@@ -208,7 +208,14 @@ def prompt_for_reflective_replay_vanilla(
       f' {goal}\n\n{reflect_str}{status_str} Your'
       ' suggestion should be in this format: "For action index=A, you should'
       ' B.", where A is the action index, and B is the suggested'
-      ' action you should have taken.\nYour suggestion:'
+      ' action you should have taken. There are three type of atomic'
+      ' actions you can suggested. Firstly, you can click an object by'
+      ' referring to its id, such as "click id=...". Secondly, you can enter'
+      ' text to an input field, such as "enter ... to id=...". However,'
+      ' every time you want to enter something, you should always click the'
+      ' desired input field before typing. Lastly, you can press and hold'
+      ' special keys on the keyboard, such as "hold CTRL" and "release CTRL"'
+      ' before and after multiple selections.\nYour suggestion:'
   )
 
 
@@ -240,7 +247,14 @@ def prompt_for_reflective_replay(
       f' {goal}\n\n{status_str} Your'
       ' suggestion should be in this format: "For action index=A, you should'
       ' B.", where A is the action index, and B is the suggested'
-      ' action you should have taken.\nYour suggestion:'
+      ' action you should have taken. There are three type of atomic'
+      ' actions you can suggested. Firstly, you can click an object by'
+      ' referring to its id, such as "click id=...". Secondly, you can enter'
+      ' text to an input field, such as "enter ... to id=...". However,'
+      ' every time you want to enter something, you should always click the'
+      ' desired input field before typing. Lastly, you can press and hold'
+      ' special keys on the keyboard, such as "hold CTRL" and "release CTRL"'
+      ' before and after multiple selections.\nYour suggestion:'
   )
 
 
@@ -327,7 +341,8 @@ def prompt_for_staged_plan(
         f' code:\n<screen>\n{html}\n</screen>\n\nThe top-level goal you want to'
         f' achieve is: {goal}\nNow, you need to generate a detailed plan for'
         ' the goal. Your plan should consist of a list of atomic'
-        ' actions.\nYour plan:'
+        ' actions. Please separate them by'
+        ' newline, without adding quotes or extra explanations.\nYour plan:'
     )
   else:
     result = (
@@ -352,8 +367,8 @@ def prompt_for_staged_plan(
           'Now, you need to plan actions that are executable on and only on'
           ' this screen. For actions that are not executable on this screen,'
           ' you should leave them to future planning. Your plan should consist'
-          ' of a list of atomic actions on the screen. Please separate them by'
-          ' newline.\nYour plan:'
+          ' of a list of atomic actions on the screen.  Please separate them by'
+        ' newline, without adding quotes or extra explanations.\nYour plan:'
       )
     else:
       # have a short ending to promote the next action pred to be consistent

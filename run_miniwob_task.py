@@ -25,8 +25,8 @@ from selenium import webdriver
 from selenium.common import exceptions
 import util
 
-LOGGING = logging.info
-# LOGGING = print
+#LOGGING = logging.info
+LOGGING = print
 STATUS = util.STATUS
 
 BASE_URL = 'miniwob/miniwob_interface/html/miniwob'
@@ -578,6 +578,8 @@ class MiniWoBRunner:
             reflect_prompt, self.llm_temp, self.llm_max_step
         )
         reflection = util.take_longest(reflections)
+        if reflection[-1] == '.':
+          reflection = reflection[:-1]
 
         # Update reflection memory
         enforce = use_structured_mem
