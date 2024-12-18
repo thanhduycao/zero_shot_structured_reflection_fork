@@ -578,6 +578,8 @@ class MiniWoBRunner:
             reflect_prompt, self.llm_temp, self.llm_max_step
         )
         reflection = util.take_longest(reflections)
+        if reflection[-1] == '"' and reflection[0] == '"':
+          reflection = reflection[1:-1]
         if reflection[-1] == '.':
           reflection = reflection[:-1]
 
